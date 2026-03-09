@@ -1,0 +1,90 @@
+{
+  "expense": [
+    {
+      "id": "exp-1",
+      "name": "餐饮",
+      "icon": "🍜",
+      "children": [
+        { "id": "exp-1-1", "name": "早餐", "icon": "🥣" },
+        { "id": "exp-1-2", "name": "午餐", "icon": "🍱" },
+        { "id": "exp-1-3", "name": "晚餐", "icon": "🍲" },
+        { "id": "exp-1-4", "name": "零食", "icon": "🍪" },
+        { "id": "exp-1-5", "name": "外卖", "icon": "🚖" }
+      ]
+    },
+    {
+      "id": "exp-2",
+      "name": "交通",
+      "icon": "🚗",
+      "children": [
+        { "id": "exp-2-1", "name": "公交", "icon": "🚌" },
+        { "id": "exp-2-2", "name": "地铁", "icon": "🚇" },
+        { "id": "exp-2-3", "name": "出租", "icon": "🚕" },
+        { "id": "exp-2-4", "name": "加油", "icon": "⛽" },
+        { "id": "exp-2-5", "name": "停车", "icon": "🅿️" }
+      ]
+    },
+    {
+      "id": "exp-3",
+      "name": "购物",
+      "icon": "🛒",
+      "children": [
+        { "id": "exp-3-1", "name": "服装", "icon": "👕" },
+        { "id": "exp-3-2", "name": "日用品", "icon": "🧴" },
+        { "id": "exp-3-3", "name": "电子产品", "icon": "📱" }
+      ]
+    },
+    {
+      "id": "exp-4",
+      "name": "居住",
+      "icon": "🏠",
+      "children": [
+        { "id": "exp-4-1", "name": "房租", "icon": "🏢" },
+        { "id": "exp-4-2", "name": "水电", "icon": "💡" },
+        { "id": "exp-4-3", "name": "物业", "icon": "🔧" }
+      ]
+    },
+    {
+      "id": "exp-5",
+      "name": "娱乐",
+      "icon": "🎬",
+      "children": [
+        { "id": "exp-5-1", "name": "电影", "icon": "🎥" },
+        { "id": "exp-5-2", "name": "游戏", "icon": "🎮" },
+        { "id": "exp-5-3", "name": "旅游", "icon": "✈️" }
+      ]
+    },
+    {
+      "id": "exp-6",
+      "name": "医疗",
+      "icon": "💊",
+      "children": [
+        { "id": "exp-6-1", "name": "门诊", "icon": "🏥" },
+        { "id": "exp-6-2", "name": "药品", "icon": "💉" },
+        { "id": "exp-6-3", "name": "保险", "icon": "📋" }
+      ]
+    },
+    {
+      "id": "exp-7",
+      "name": "教育",
+      "icon": "📚",
+      "children": [
+        { "id": "exp-7-1", "name": "培训", "icon": "🎓" },
+        { "id": "exp-7-2", "name": "书籍", "icon": "📖" },
+        { "id": "exp-7-3", "name": "课程", "icon": "📝" }
+      ]
+    },
+    {
+      "id": "exp-8",
+      "name": "其他",
+      "icon": "📦",
+      "children": []
+    }
+  ],
+  "income": [
+    { "id": "inc-1", "name": "工资", "icon": "💰" },
+    { "id": "inc-2", "name": "兼职", "icon": "💼" },
+    { "id": "inc-3", "name": "投资", "icon": "📈" },
+    { "id": "inc-4", "name": "其他", "icon": "🎁" }
+  ]
+}

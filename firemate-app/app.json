@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "火伴记账",
+    "slug": "firemate-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2DD4BF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.firemate.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2DD4BF",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "package": "com.firemate.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "scheme": "firemate",
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
