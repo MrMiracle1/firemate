@@ -1,13 +1,28 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 
+// Apple Design Color Palette
+const colors = {
+  primary: '#007AFF',        // iOS Blue
+  secondary: '#5856D6',      // iOS Purple
+  success: '#34C759',        // iOS Green
+  danger: '#FF3B30',         // iOS Red
+  warning: '#FF9500',        // iOS Orange
+  background: '#F2F2F7',  // iOS Light Gray
+  card: '#FFFFFF',
+  text: '#000000',
+  textSecondary: '#8E8E93',
+  textTertiary: '#C7C7CC',
+  separator: '#E5E5EA',
+};
+
 const menuItems = [
-  { id: 'reports', icon: '📊', title: '报表分析', desc: '查看收支趋势' },
-  { id: 'budget', icon: '📝', title: '预算管理', desc: '设置月度预算' },
-  { id: 'goals', icon: '🎯', title: '储蓄目标', desc: '规划存钱计划' },
-  { id: 'categories', icon: '🏷️', title: '分类管理', desc: '自定义分类' },
-  { id: 'export', icon: '📤', title: '数据导出', desc: '导出账单数据' },
-  { id: 'settings', icon: '⚙️', title: '设置', desc: 'App 偏好设置' }
+  { id: 'reports', icon: '📊', title: '报表分析', desc: '查看收支趋势', color: '#E3F2FD' },
+  { id: 'budget', icon: '📝', title: '预算管理', desc: '设置月度预算', color: '#E8F5E9' },
+  { id: 'goals', icon: '🎯', title: '储蓄目标', desc: '规划存钱计划', color: '#FFF3E0' },
+  { id: 'categories', icon: '🏷️', title: '分类管理', desc: '自定义分类', color: '#F3E5F5' },
+  { id: 'export', icon: '📤', title: '数据导出', desc: '导出账单数据', color: '#E0F7FA' },
+  { id: 'settings', icon: '⚙️', title: '设置', desc: 'App 偏好设置', color: '#F5F5F5' }
 ];
 
 export default function MoreScreen() {
@@ -30,96 +45,144 @@ export default function MoreScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>更多</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        {menuItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.menuItem}
-            onPress={() => handlePress(item.id)}
-          >
-            <Text style={styles.menuIcon}>{item.icon}</Text>
-            <View style={styles.menuInfo}>
-              <Text style={styles.menuTitle}>{item.title}</Text>
-              <Text style={styles.menuDesc}>{item.desc}</Text>
-            </View>
-            <Text style={styles.menuArrow}>›</Text>
-          </TouchableOpacity>
-        ))}
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>火伴记账 v1.0.0</Text>
-          <Text style={styles.footerSubtext}>让财务管理更简单</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>更多</Text>
+          <Text style={styles.headerSubtitle}>个性化设置</Text>
         </View>
-      </ScrollView>
-    </View>
+
+        <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+          <View style={styles.menuList}>
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.menuItem}
+                onPress={() => handlePress(item.id)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.menuIconContainer, { backgroundColor: item.color }]}>
+                  <Text style={styles.menuIcon}>{item.icon}</Text>
+                </View>
+                <View style={styles.menuInfo}>
+                  <Text style={styles.menuTitle}>{item.title}</Text>
+                  <Text style={styles.menuDesc}>{item.desc}</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* App Info Card */}
+          <View style={styles.appInfoCard}>
+            <Text style={styles.appName}>火伴记账</Text>
+            <Text style={styles.appVersion}>v1.0.0</Text>
+            <Text style={styles.appTagline}>让财务管理更简单</Text>
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6'
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#2DD4BF',
-    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingTop: 16,
     paddingBottom: 20,
-    paddingHorizontal: 20
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF'
+    fontSize: 34,
+    fontWeight: '700',
+    color: colors.text,
+    letterSpacing: 0.37,
+  },
+  headerSubtitle: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   content: {
     flex: 1,
-    padding: 20
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 100,
+  },
+  menuList: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    overflow: 'hidden',
+    ...{
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
+    },
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     padding: 16,
-    borderRadius: 12,
-    marginBottom: 8
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
+  menuIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
   },
   menuIcon: {
-    fontSize: 24,
-    marginRight: 14
+    fontSize: 20,
   },
   menuInfo: {
-    flex: 1
+    flex: 1,
   },
   menuTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '500',
-    color: '#1F2937'
+    color: colors.text,
   },
   menuDesc: {
     fontSize: 13,
-    color: '#9CA3AF',
-    marginTop: 2
+    color: colors.textSecondary,
+    marginTop: 2,
   },
   menuArrow: {
-    fontSize: 24,
-    color: '#D1D5DB'
+    fontSize: 22,
+    color: colors.textTertiary,
+    fontWeight: '300',
   },
-  footer: {
+  appInfoCard: {
     alignItems: 'center',
-    paddingVertical: 40
+    paddingVertical: 40,
   },
-  footerText: {
-    fontSize: 14,
-    color: '#9CA3AF'
+  appName: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
-  footerSubtext: {
+  appVersion: {
+    fontSize: 13,
+    color: colors.textTertiary,
+    marginTop: 4,
+  },
+  appTagline: {
     fontSize: 12,
-    color: '#D1D5DB',
-    marginTop: 4
-  }
+    color: colors.textTertiary,
+    marginTop: 8,
+  },
 });

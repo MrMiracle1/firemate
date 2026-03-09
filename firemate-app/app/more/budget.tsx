@@ -1,6 +1,21 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, SafeAreaView } from 'react-native';
 import { useBudgetStore } from '../../src/stores/budgetStore';
+
+// Apple Design Color Palette
+const colors = {
+  primary: '#007AFF',        // iOS Blue
+  secondary: '#5856D6',      // iOS Purple
+  success: '#34C759',        // iOS Green
+  danger: '#FF3B30',         // iOS Red
+  warning: '#FF9500',        // iOS Orange
+  background: '#F2F2F7',  // iOS Light Gray
+  card: '#FFFFFF',
+  text: '#000000',
+  textSecondary: '#8E8E93',
+  textTertiary: '#C7C7CC',
+  separator: '#E5E5EA',
+};
 
 export default function BudgetScreen() {
   const { budget, fetchBudget, setBudget } = useBudgetStore();
@@ -30,188 +45,295 @@ export default function BudgetScreen() {
   };
 
   const getProgressColor = (percent: number) => {
-    if (percent <= 70) return '#10B981';
-    if (percent <= 90) return '#F59E0B';
-    return '#EF4444';
+    if (percent <= 70) return colors.success;
+    if (percent <= 90) return colors.warning;
+    return colors.danger;
   };
 
   const currentMonthLabel = currentMonth.slice(0, 7).replace('-', '年') + '月';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>预算管理</Text>
-        <Text style={styles.headerSubtitle}>{currentMonthLabel}</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>本月预算</Text>
-          {budget ? (
-            <>
-              <Text style={styles.budgetAmount}>¥ {budget.amount.toLocaleString()}</Text>
-              <Text style={styles.modifyInfo}>
-                已修改 {budget.modified_count}/1 次
-              </Text>
-            </>
-          ) : (
-            <Text style={styles.noBudget}>未设置</Text>
-          )}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>预算管理</Text>
+          <Text style={styles.headerSubtitle}>{currentMonthLabel}</Text>
         </View>
 
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>
-            {budget ? '修改预算' : '设置预算'}
-          </Text>
-          <View style={styles.inputRow}>
-            <Text style={styles.currencySymbol}>¥</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="请输入金额"
-              keyboardType="decimal-pad"
-              value={amount}
-              onChangeText={setAmount}
-            />
+        <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+          {/* Budget Display Card */}
+          <View style={styles.budgetCard}>
+            <Text style={styles.cardLabel}>本月预算</Text>
+            {budget ? (
+              <>
+                <Text style={styles.budgetAmount}>¥ {budget.amount.toLocaleString()}</Text>
+                <View style={styles.budgetInfo}>
+                  <View style={styles.infoItem}>
+                    <Text style={styles.infoValue}>{budget.modified_count}/1</Text>
+                    <Text style={styles.infoLabel}>修改次数</Text>
+                  </View>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.noBudget}>未设置</Text>
+            )}
           </View>
 
-          {budget && budget.modified_count >= 1 && (
-            <Text style={styles.warningText}>
-              本月已修改过一次预算，无法再次修改
+          {/* Input Card */}
+          <View style={styles.inputCard}>
+            <Text style={styles.inputLabel}>
+              {budget ? '修改预算' : '设置预算'}
             </Text>
-          )}
+            <View style={styles.inputRow}>
+              <Text style={styles.currencySymbol}>¥</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="请输入金额"
+                placeholderTextColor={colors.textTertiary}
+                keyboardType="decimal-pad"
+                value={amount}
+                onChangeText={setAmount}
+              />
+            </View>
 
-          {(!budget || budget.modified_count < 1) && (
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveButtonText}>保存</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+            {budget && budget.modified_count >= 1 && (
+              <View style={styles.warningCard}>
+                <Text style={styles.warningText}>
+                  本月已修改过一次预算，无法再次修改
+                </Text>
+              </View>
+            )}
 
-        <View style={styles.tipCard}>
-          <Text style={styles.tipTitle}>💡 预算小贴士</Text>
-          <Text style={styles.tipText}>• 绿色：支出在 70% 以下</Text>
-          <Text style={styles.tipText}>• 橙色：支出在 70%-90%</Text>
-          <Text style={styles.tipText}>• 红色：支出超过 90%</Text>
-          <Text style={styles.tipText}>• 每月只能修改 1 次预算</Text>
-        </View>
-      </ScrollView>
-    </View>
+            {(!budget || budget.modified_count < 1) && (
+              <TouchableOpacity style={styles.saveButton} onPress={handleSave} activeOpacity={0.8}>
+                <Text style={styles.saveButtonText}>保存</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Tips Card */}
+          <View style={styles.tipCard}>
+            <View style={styles.tipHeader}>
+              <Text style={styles.tipIcon}>💡</Text>
+              <Text style={styles.tipTitle}>预算小贴士</Text>
+            </View>
+            <View style={styles.tipContent}>
+              <View style={styles.tipRow}>
+                <View style={[styles.tipDot, { backgroundColor: colors.success }]} />
+                <Text style={styles.tipText}>绿色：支出在 70% 以下</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <View style={[styles.tipDot, { backgroundColor: colors.warning }]} />
+                <Text style={styles.tipText}>橙色：支出在 70%-90%</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <View style={[styles.tipDot, { backgroundColor: colors.danger }]} />
+                <Text style={styles.tipText}>红色：支出超过 90%</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <View style={[styles.tipDot, { backgroundColor: colors.primary }]} />
+                <Text style={styles.tipText}>每月只能修改 1 次预算</Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6'
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#2DD4BF',
-    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingTop: 16,
     paddingBottom: 20,
-    paddingHorizontal: 20
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF'
+    fontSize: 34,
+    fontWeight: '700',
+    color: colors.text,
+    letterSpacing: 0.37,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 4
+    fontSize: 15,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   content: {
     flex: 1,
-    padding: 20
   },
-  card: {
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    borderRadius: 16,
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 100,
+  },
+  budgetCard: {
+    backgroundColor: colors.card,
+    padding: 28,
+    borderRadius: 20,
     alignItems: 'center',
-    marginBottom: 20
+    ...{
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 20,
+      elevation: 5,
+    },
   },
   cardLabel: {
     fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 8
+    fontWeight: '500',
+    color: colors.textSecondary,
+    marginBottom: 8,
   },
   budgetAmount: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#1F2937'
+    fontSize: 42,
+    fontWeight: '700',
+    color: colors.text,
+    letterSpacing: -1,
   },
-  modifyInfo: {
+  budgetInfo: {
+    flexDirection: 'row',
+    marginTop: 16,
+  },
+  infoItem: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  infoValue: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  infoLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
-    marginTop: 8
+    color: colors.textSecondary,
+    marginTop: 2,
   },
   noBudget: {
     fontSize: 24,
-    color: '#9CA3AF'
+    color: colors.textTertiary,
+    marginTop: 8,
   },
   inputCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.card,
     padding: 20,
-    borderRadius: 16,
-    marginBottom: 20
+    borderRadius: 20,
+    marginTop: 16,
+    ...{
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
+    },
   },
   inputLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6B7280',
-    marginBottom: 12
+    color: colors.textSecondary,
+    marginBottom: 12,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 10,
-    paddingHorizontal: 16
+    backgroundColor: colors.background,
+    borderRadius: 12,
+    paddingHorizontal: 16,
   },
   currencySymbol: {
-    fontSize: 20,
-    color: '#6B7280',
-    marginRight: 8
+    fontSize: 24,
+    color: colors.textSecondary,
+    marginRight: 8,
   },
   input: {
     flex: 1,
-    fontSize: 20,
-    paddingVertical: 14,
-    color: '#1F2937'
+    fontSize: 24,
+    paddingVertical: 16,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  warningCard: {
+    backgroundColor: '#FFF3E0',
+    padding: 12,
+    borderRadius: 10,
+    marginTop: 12,
   },
   warningText: {
-    color: '#F59E0B',
+    color: colors.warning,
     fontSize: 14,
-    marginTop: 12,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   saveButton: {
-    backgroundColor: '#2DD4BF',
-    padding: 14,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 16
+    marginTop: 16,
+    ...{
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
   },
   saveButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#FFFFFF'
+    color: '#FFFFFF',
   },
   tipCard: {
-    backgroundColor: '#ECFDF5',
-    padding: 16,
-    borderRadius: 12
+    backgroundColor: colors.card,
+    padding: 20,
+    borderRadius: 20,
+    marginTop: 16,
+    ...{
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
+    },
+  },
+  tipHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  tipIcon: {
+    fontSize: 18,
+    marginRight: 8,
   },
   tipTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#059669',
-    marginBottom: 8
+    color: colors.text,
+  },
+  tipContent: {
+    gap: 10,
+  },
+  tipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tipDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 10,
   },
   tipText: {
-    fontSize: 13,
-    color: '#059669',
-    lineHeight: 22
-  }
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+  },
 });
