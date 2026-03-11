@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useBudgetStore } from '../../src/stores/budgetStore';
 
 // Apple Design Color Palette
@@ -55,12 +56,6 @@ export default function BudgetScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>预算管理</Text>
-          <Text style={styles.headerSubtitle}>{currentMonthLabel}</Text>
-        </View>
-
         <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
           {/* Budget Display Card */}
           <View style={styles.budgetCard}>
@@ -115,7 +110,7 @@ export default function BudgetScreen() {
           {/* Tips Card */}
           <View style={styles.tipCard}>
             <View style={styles.tipHeader}>
-              <Text style={styles.tipIcon}>💡</Text>
+              <Ionicons name="bulb-outline" size={20} color={colors.warning} style={{ marginRight: 8 }} />
               <Text style={styles.tipTitle}>预算小贴士</Text>
             </View>
             <View style={styles.tipContent}>
@@ -151,22 +146,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: 0.37,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginTop: 4,
   },
   content: {
     flex: 1,
@@ -308,10 +287,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  tipIcon: {
-    fontSize: 18,
-    marginRight: 8,
   },
   tipTitle: {
     fontSize: 16,

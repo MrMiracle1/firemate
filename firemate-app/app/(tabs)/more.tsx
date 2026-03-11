@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 // Apple Design Color Palette
 const colors = {
@@ -17,12 +18,12 @@ const colors = {
 };
 
 const menuItems = [
-  { id: 'reports', icon: '📊', title: '报表分析', desc: '查看收支趋势', color: '#E3F2FD' },
-  { id: 'budget', icon: '📝', title: '预算管理', desc: '设置月度预算', color: '#E8F5E9' },
-  { id: 'goals', icon: '🎯', title: '储蓄目标', desc: '规划存钱计划', color: '#FFF3E0' },
-  { id: 'categories', icon: '🏷️', title: '分类管理', desc: '自定义分类', color: '#F3E5F5' },
-  { id: 'export', icon: '📤', title: '数据导出', desc: '导出账单数据', color: '#E0F7FA' },
-  { id: 'settings', icon: '⚙️', title: '设置', desc: 'App 偏好设置', color: '#F5F5F5' }
+  { id: 'reports', icon: 'bar-chart' as const, title: '报表分析', desc: '查看收支趋势', color: '#E3F2FD', iconColor: colors.primary },
+  { id: 'budget', icon: 'document-text' as const, title: '预算管理', desc: '设置月度预算', color: '#E8F5E9', iconColor: colors.success },
+  { id: 'goals', icon: 'flag' as const, title: '储蓄目标', desc: '规划存钱计划', color: '#FFF3E0', iconColor: colors.warning },
+  { id: 'categories', icon: 'pricetags' as const, title: '分类管理', desc: '自定义分类', color: '#F3E5F5', iconColor: colors.secondary },
+  { id: 'export', icon: 'share-social' as const, title: '数据导出', desc: '导出账单数据', color: '#E0F7FA', iconColor: '#00BCD4' },
+  { id: 'settings', icon: 'settings' as const, title: '设置', desc: 'App 偏好设置', color: '#F5F5F5', iconColor: colors.textSecondary }
 ];
 
 export default function MoreScreen() {
@@ -63,13 +64,13 @@ export default function MoreScreen() {
                 activeOpacity={0.7}
               >
                 <View style={[styles.menuIconContainer, { backgroundColor: item.color }]}>
-                  <Text style={styles.menuIcon}>{item.icon}</Text>
+                  <Ionicons name={item.icon} size={22} color={item.iconColor} />
                 </View>
                 <View style={styles.menuInfo}>
                   <Text style={styles.menuTitle}>{item.title}</Text>
                   <Text style={styles.menuDesc}>{item.desc}</Text>
                 </View>
-                <Text style={styles.menuArrow}>›</Text>
+                <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
               </TouchableOpacity>
             ))}
           </View>
@@ -145,9 +146,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 14,
   },
-  menuIcon: {
-    fontSize: 20,
-  },
   menuInfo: {
     flex: 1,
   },
@@ -160,11 +158,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     marginTop: 2,
-  },
-  menuArrow: {
-    fontSize: 22,
-    color: colors.textTertiary,
-    fontWeight: '300',
   },
   appInfoCard: {
     alignItems: 'center',

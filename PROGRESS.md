@@ -3,8 +3,9 @@
 ## 项目概述
 
 - **项目名称**：火伴记账 (Firemate)
-- **分支**：`001-finance-app` / `main`
+- **分支**：`main`
 - **技术栈**：React Native (Expo) + Node.js + Supabase
+- **当前版本**：V1.0
 
 ---
 
@@ -17,17 +18,22 @@
 | **项目初始化** | ✅ 完成 | Expo 前端 + Node.js 后端项目已创建 |
 | **数据库设计** | ✅ 完成 | Schema 已设计，需在 Supabase 执行 |
 | **后端 API** | ✅ 完成 | 账户、流水、预算、目标 CRUD 接口 |
-| **前端页面** | ✅ 完成 | 首页、记账、账户、预算、目标、报表 |
+| **前端页面** | ✅ 完成 | 首页、记账、账户、预算、目标、报表、登录注册 |
 | **状态管理** | ✅ 完成 | Zustand stores 已配置 |
-| **本地测试** | ⚠️ 部分 | 后端已测试，前端需配置数据库后测试 |
+| **UI/UX 改进** | ✅ 完成 | Apple Design 风格、Ionicons 图标库 |
+| **表单验证** | ✅ 完成 | Zod 验证 schemas |
+| **离线缓存** | ✅ 完成 | AsyncStorage 本地缓存支持 |
+| **用户认证** | ✅ 完成 | 邮箱登录注册 + 匿名模式 |
+| **测试框架** | ✅ 完成 | Jest + ts-jest，8个测试用例通过 |
+| **所有任务** | ✅ 完成 | 79个任务全部完成 (spec/tasks.md) |
 
 ### ⏳ 待完成
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
 | **配置 Supabase 数据库** | P0 | 需要在 Supabase 后台执行 `server/sql/schema.sql` |
-| **前端本地测试** | P1 | 启动 `npx expo start --web` 测试 |
-| **服务器部署** | P1 | 部署后端到 `111.229.145.143:3000` |
+| **前端真机测试** | P1 | 在手机或模拟器上测试 |
+| **服务器部署** | P1 | 部署后端到服务器 |
 | **正式环境配置** | P2 | 修改前端 API 地址为正式服务器 |
 
 ---
@@ -35,43 +41,87 @@
 ## 项目结构
 
 ```
-firemate-v2/
-├── firemate-app/          # React Native 前端
-│   ├── app/              # Expo Router 页面
-│   │   ├── (tabs)/      # 底部导航
-│   │   │   ├── index.tsx    # 首页
-│   │   │   ├── add.tsx     # 记账
-│   │   │   ├── accounts.tsx # 账户
-│   │   │   └── more.tsx    # 更多
-│   │   └── more/          # 子页面
-│   │       ├── budget.tsx  # 预算
-│   │       ├── goals.tsx   # 目标
-│   │       └── reports.tsx # 报表
-│   └── src/
-│       ├── stores/       # Zustand 状态管理
-│       ├── types/        # TypeScript 类型
-│       ├── lib/          # Supabase 客户端
-│       └── data/         # 分类数据
-│
-├── server/               # Node.js 后端
+firemate/
+├── firemate-app/              # React Native 前端 (Expo)
+│   ├── app/                   # Expo Router 页面
+│   │   ├── (tabs)/            # 底部导航
+│   │   │   ├── _layout.tsx    # Tab 导航布局
+│   │   │   ├── index.tsx      # 首页（总资产、预算、流水）
+│   │   │   ├── add.tsx        # 记一笔（记账表单）
+│   │   │   ├── accounts.tsx   # 账户管理
+│   │   │   └── more.tsx       # 更多菜单
+│   │   ├── more/              # 子页面
+│   │   │   ├── budget.tsx     # 预算设置
+│   │   │   ├── goals.tsx      # 储蓄目标
+│   │   │   └── reports.tsx    # 报表图表
+│   │   ├── _layout.tsx        # 根布局
+│   │   └── auth.tsx           # 登录/注册页面
 │   ├── src/
-│   │   ├── routes/      # API 路由
-│   │   ├── services/    # 业务逻辑
-│   │   └── lib/        # Supabase 客户端
-│   ├── sql/
-│   │   └── schema.sql  # 数据库 Schema
-│   └── .env            # 环境配置
+│   │   ├── stores/            # Zustand 状态管理
+│   │   │   ├── accountStore.ts
+│   │   │   ├── transactionStore.ts
+│   │   │   ├── budgetStore.ts
+│   │   │   └── goalStore.ts
+│   │   ├── components/        # UI 组件
+│   │   │   └── common/         # 通用组件
+│   │   ├── lib/               # 工具库
+│   │   │   ├── supabase.ts    # Supabase 客户端
+│   │   │   ├── auth.ts        # 认证 store
+│   │   │   ├── cache.ts       # AsyncStorage 缓存
+│   │   │   └── validation.ts  # Zod 验证
+│   │   ├── types/             # TypeScript 类型定义
+│   │   └── data/              # 分类数据
+│   ├── __tests__/             # Jest 测试
+│   │   └── validation.test.ts
+│   └── package.json
 │
-└── specs/               # 项目文档
+├── server/                    # Node.js 后端
+│   ├── src/
+│   │   ├── routes/           # API 路由
+│   │   ├── services/         # 业务逻辑
+│   │   └── lib/             # Supabase 客户端
+│   ├── sql/
+│   │   └── schema.sql       # 数据库 Schema
+│   └── .env                 # 环境配置
+│
+└── specs/                    # 项目文档
     └── 001-finance-app/
-        ├── spec.md      # 功能规格
-        ├── tasks.md     # 任务清单
-        └── tech.md      # 技术方案
+        ├── spec.md           # 功能规格说明书
+        ├── plan.md           # 实施计划
+        ├── tasks.md          # 任务清单 (79个任务)
+        ├── data-model.md     # 数据模型
+        ├── research.md       # 技术研究
+        ├── tech.md           # 技术方案
+        └── quickstart.md     # 快速开始指南
 ```
 
 ---
 
-## 快速开始（从其他电脑）
+## UI/UX 改进内容
+
+### 视觉设计
+- 采用 Apple Design (iOS) 风格
+- 使用 Ionicons 专业图标库
+- 统一的颜色系统 (#007AFF 主色)
+- 圆角卡片、简洁布局
+
+### 交互改进
+- 日期选择弹窗 (Modal)
+- 分类选择器
+- 表单验证提示
+- 加载状态和错误处理
+- 离线状态指示器
+
+### 页面组件
+- 首页：总资产卡片、本月收支、预算进度、最近流水
+- 记账：类型切换、分类网格、日期选择
+- 账户：分组列表、添加/编辑弹窗
+- 报表：饼图、折线图、条形图 (Tab 切换)
+- 登录：邮箱登录、匿名模式
+
+---
+
+## 快速开始
 
 ### 1. 克隆项目
 
@@ -128,7 +178,16 @@ cd firemate-app
 npx expo start --web
 ```
 
-浏览器打开 `http://localhost:8081`
+---
+
+## 运行测试
+
+```bash
+cd firemate-app
+npm test
+```
+
+当前测试：8 个用例全部通过
 
 ---
 
@@ -145,7 +204,7 @@ npx expo start --web
 
 ## 服务器部署
 
-后端部署到 `111.229.145.143:3000`：
+后端部署到服务器：
 
 ```bash
 cd server
@@ -155,37 +214,36 @@ npm run build
 
 部署后修改前端 API 地址：
 - 开发环境：`http://localhost:3000`
-- 正式环境：`http://111.229.145.143:3000`
+- 正式环境：`http://your-server:3000`
 
 ---
 
-## 已知问题
+## 任务完成情况
 
-1. **前端 Web 启动**：需要先执行 `npm install react-native-web --legacy-peer-deps`
-2. **数据库**：必须先在 Supabase 执行 schema.sql 才能正常测试
+所有 79 个任务已完成：
 
----
-
-## 任务清单
-
-完整任务见 `specs/001-finance-app/tasks.md`
-
-**MVP 范围**（优先完成）：
-1. ✅ 项目初始化
-2. ✅ 后端 API
-3. ⏳ 配置数据库
-4. ⏳ 前端测试
-5. ⏳ 服务器部署
-
----
-
-## 联系方式
-
-如有疑问，请查看：
-- 功能规格：`specs/001-finance-app/spec.md`
-- 技术方案：`specs/001-finance-app/tech.md`
-- 任务清单：`specs/001-finance-app/tasks.md`
+| 阶段 | 任务数 | 状态 |
+|------|--------|------|
+| 第一阶段：项目初始化 | 6 | ✅ |
+| 第二阶段：基础设施 | 9 | ✅ |
+| 第三阶段：US1 (总资产) | 7 | ✅ |
+| 第四阶段：US2 (账户管理) | 11 | ✅ |
+| 第五阶段：US3 (记账) | 10 | ✅ |
+| 第六阶段：US4 (转账) | 4 | ✅ |
+| 第七阶段：US5 (预算) | 8 | ✅ |
+| 第八阶段：US6 (报表) | 8 | ✅ |
+| 第九阶段：US7 (目标) | 8 | ✅ |
+| 第十阶段：收尾 | 8 | ✅ |
 
 ---
 
-*最后更新：2026-03-09*
+## 下一步
+
+1. 在 Supabase 执行 schema.sql 配置数据库
+2. 启动后端和前端进行集成测试
+3. 部署后端到服务器
+4. 发布 App
+
+---
+
+*最后更新：2026-03-11*

@@ -1,19 +1,15 @@
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    home: '🏠',
-    add: '✏️',
-    accounts: '💳',
-    more: '📋'
-  };
-
+function TabIcon({ name, focused, iconName }: { name: string; focused: boolean; iconName: keyof typeof Ionicons.glyphMap }) {
   return (
-    <View style={styles.tabIcon}>
-      <Text style={[styles.icon, focused && styles.iconFocused]}>
-        {icons[name] || '•'}
-      </Text>
+    <View style={styles.tabIconContainer}>
+      <Ionicons
+        name={focused ? iconName : `${iconName}-outline` as keyof typeof Ionicons.glyphMap}
+        size={24}
+        color={focused ? '#007AFF' : '#8E8E93'}
+      />
     </View>
   );
 }
@@ -22,39 +18,39 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#2DD4BF',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
-        headerShown: false
+        headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: '首页',
-          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />
+          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} iconName="home" />
         }}
       />
       <Tabs.Screen
         name="add"
         options={{
           title: '记账',
-          tabBarIcon: ({ focused }) => <TabIcon name="add" focused={focused} />
+          tabBarIcon: ({ focused }) => <TabIcon name="add" focused={focused} iconName="create" />
         }}
       />
       <Tabs.Screen
         name="accounts"
         options={{
           title: '账户',
-          tabBarIcon: ({ focused }) => <TabIcon name="accounts" focused={focused} />
+          tabBarIcon: ({ focused }) => <TabIcon name="accounts" focused={focused} iconName="wallet" />
         }}
       />
       <Tabs.Screen
         name="more"
         options={{
           title: '更多',
-          tabBarIcon: ({ focused }) => <TabIcon name="more" focused={focused} />
+          tabBarIcon: ({ focused }) => <TabIcon name="more" focused={focused} iconName="menu" />
         }}
       />
     </Tabs>
@@ -64,25 +60,29 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    height: 80,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E5E5EA',
+    height: Platform.OS === 'ios' ? 88 : 65,
     paddingTop: 8,
-    paddingBottom: 20
+    paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   tabLabel: {
-    fontSize: 12,
-    fontWeight: '500'
+    fontSize: 10,
+    fontWeight: '500',
   },
-  tabIcon: {
+  tabIconContainer: {
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  icon: {
-    fontSize: 24,
-    opacity: 0.6
-  },
-  iconFocused: {
-    opacity: 1
-  }
 });

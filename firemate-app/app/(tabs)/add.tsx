@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, SafeAreaView, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAccountStore } from '../../src/stores/accountStore';
 import { useTransactionStore } from '../../src/stores/transactionStore';
+import { validateForm, transactionSchema } from '../../src/lib/validation';
 import categoriesData from '../../src/data/categories.json';
 
 // Apple Design Color Palette
@@ -22,6 +24,44 @@ const colors = {
 
 type TransactionType = 'expense' | 'income' | 'transfer';
 
+// 分类图标映射 - 将 emoji 映射到 Ionicons
+const categoryIconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
+  // 支出分类
+  '🍜': 'restaurant', '🥣': 'cafe', '🍱': 'restaurant', '🍲': 'restaurant', '🍪': 'ice-cream', '🚖': 'car',
+  '🚗': 'car', '🚌': 'bus', '🚇': 'train', '🚕': 'taxi', '⛽': 'fuel', '🅿️': 'parking',
+  '🛒': 'cart', '👕': 'shirt', '🧴': 'medical', '📱': 'phone-portrait',
+  '🏠': 'home', '🏢': 'business', '💡': 'flash', 'build': 'construct',
+  '🎬': 'film', '🎥': 'videocam', '🎮': 'game-controller', '✈️': 'airplane',
+  '💊': 'medical', '🏥': 'hospital', '💉': 'medical', '📋': 'document-text',
+  '📚': 'book', '🎓': 'school', '📖': 'book', '📝': 'document-text',
+  '📦': 'cube',
+  // 收入分类
+  '💰': 'cash', '💼': 'briefcase', '📈': 'trending-up', '🎁': 'gift',
+};
+
+function CategoryIcon({ icon, selected }: { icon: string; selected: boolean }) {
+  const ionIcon = categoryIconMap[icon];
+
+  if (ionIcon) {
+    return (
+      <View style={[styles.categoryIconContainer, selected && styles.categoryIconActive]}>
+        <Ionicons
+          name={selected ? ionIcon : `${ionIcon}-outline` as keyof typeof Ionicons.glyphMap}
+          size={22}
+          color={selected ? '#FFFFFF' : colors.textSecondary}
+        />
+      </View>
+    );
+  }
+
+  // 如果没有映射，回退到 emoji
+  return (
+    <View style={[styles.categoryIconContainer, selected && styles.categoryIconActive]}>
+      <Text style={styles.categoryEmoji}>{icon}</Text>
+    </View>
+  );
+}
+
 export default function AddTransactionScreen() {
   const router = useRouter();
   const { accounts, fetchAccounts } = useAccountStore();
@@ -34,6 +74,41 @@ export default function AddTransactionScreen() {
   const [toAccountId, setToAccountId] = useState<string | undefined>();
   const [note, setNote] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // 生成过去30天的日期选项
+  const getDateOptions = () => {
+    const options = [];
+    const today = new Date();
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      options.push({
+        value: d.toISOString().split('T')[0],
+        label: i === 0 ? '今天' : i === 1 ? '昨天' : `${d.getMonth() + 1}月${d.getDate()}日`,
+        fullLabel: `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
+      });
+    }
+    return options;
+  };
+
+  const dateOptions = getDateOptions();
+
+  const handleDateSelect = (selectedDate: string) => {
+    setDate(selectedDate);
+    setShowDatePicker(false);
+  };
+
+  const formatDisplayDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (dateStr === today.toISOString().split('T')[0]) return '今天';
+    if (dateStr === yesterday.toISOString().split('T')[0]) return '昨天';
+    return `${d.getMonth() + 1}月${d.getDate()}日`;
+  };
 
   const expenseCategories = categoriesData.expense as any[];
   const incomeCategories = categoriesData.income as any[];
@@ -41,32 +116,31 @@ export default function AddTransactionScreen() {
   const currentCategories = type === 'income' ? incomeCategories : expenseCategories;
 
   const handleSave = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      Alert.alert('提示', '请输入有效金额');
-      return;
-    }
-    if (!accountId) {
-      Alert.alert('提示', '请选择账户');
-      return;
-    }
-    if (type === 'transfer' && !toAccountId) {
-      Alert.alert('提示', '请选择转入账户');
-      return;
-    }
-    if (type !== 'transfer' && !categoryId) {
-      Alert.alert('提示', '请选择分类');
+    // 使用 zod 验证
+    const validation = validateForm(transactionSchema, {
+      type,
+      amount: parseFloat(amount) || 0,
+      category_id: categoryId,
+      account_id: accountId,
+      to_account_id: toAccountId,
+      date,
+      note
+    });
+
+    if (!validation.success) {
+      Alert.alert('验证失败', validation.errors[0]);
       return;
     }
 
     try {
       await createTransaction({
-        type,
-        amount: parseFloat(amount),
-        category_id: categoryId,
-        account_id: accountId,
-        to_account_id: toAccountId,
-        date,
-        note
+        type: validation.data.type,
+        amount: validation.data.amount,
+        category_id: validation.data.category_id,
+        account_id: validation.data.account_id,
+        to_account_id: validation.data.to_account_id,
+        date: validation.data.date,
+        note: validation.data.note
       });
       Alert.alert('成功', '记账成功', [
         { text: '确定', onPress: () => router.back() }
@@ -135,9 +209,7 @@ export default function AddTransactionScreen() {
                   onPress={() => setCategoryId(category.id)}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.categoryIconContainer, categoryId === category.id && styles.categoryIconActive]}>
-                    <Text style={styles.categoryIcon}>{category.icon}</Text>
-                  </View>
+                  <CategoryIcon icon={category.icon} selected={categoryId === category.id} />
                   <Text style={[styles.categoryName, categoryId === category.id && styles.categoryNameActive]}>
                     {category.name}
                   </Text>
@@ -194,17 +266,51 @@ export default function AddTransactionScreen() {
           </View>
         )}
 
-        {/* 日期选择 - iOS Input */}
+        {/* 日期选择 - iOS Style Picker */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>日期</Text>
-          <TextInput
-            style={styles.dateInput}
-            value={date}
-            onChangeText={setDate}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={colors.textTertiary}
-          />
+          <TouchableOpacity
+            style={styles.datePickerButton}
+            onPress={() => setShowDatePicker(true)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+            <Text style={styles.datePickerText}>{formatDisplayDate(date)}</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
         </View>
+
+        {/* 日期选择弹窗 */}
+        <Modal visible={showDatePicker} animationType="slide" transparent>
+          <View style={styles.dateModalOverlay}>
+            <TouchableOpacity style={styles.dateModalBackdrop} onPress={() => setShowDatePicker(false)} />
+            <View style={styles.dateModalContent}>
+              <View style={styles.dateModalHandle} />
+              <View style={styles.dateModalHeader}>
+                <Text style={styles.dateModalTitle}>选择日期</Text>
+                <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                  <Text style={styles.dateModalDone}>完成</Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView style={styles.dateModalList} showsVerticalScrollIndicator={false}>
+                {dateOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[styles.dateModalItem, date === option.value && styles.dateModalItemActive]}
+                    onPress={() => handleDateSelect(option.value)}
+                  >
+                    <Text style={[styles.dateModalItemText, date === option.value && styles.dateModalItemTextActive]}>
+                      {option.fullLabel}
+                    </Text>
+                    {date === option.value && (
+                      <Ionicons name="checkmark" size={20} color={colors.primary} />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
 
         {/* 备注 - iOS Input */}
         <View style={styles.section}>
@@ -349,17 +455,21 @@ const styles = StyleSheet.create({
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   categoryItem: {
-    width: '22%',
+    width: '23%',
     alignItems: 'center',
-    padding: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
     borderRadius: 12,
     backgroundColor: colors.background,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   categoryItemActive: {
     backgroundColor: '#E3F2FD',
+    borderColor: colors.primary,
   },
   categoryIconContainer: {
     width: 44,
@@ -373,7 +483,7 @@ const styles = StyleSheet.create({
   categoryIconActive: {
     backgroundColor: colors.primary,
   },
-  categoryIcon: {
+  categoryEmoji: {
     fontSize: 22,
   },
   categoryName: {
@@ -417,6 +527,85 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     color: colors.text,
+  },
+  datePickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    padding: 14,
+    borderRadius: 10,
+  },
+  datePickerText: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.text,
+    marginLeft: 10,
+  },
+  // 日期选择弹窗样式
+  dateModalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  dateModalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  dateModalContent: {
+    backgroundColor: colors.card,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingBottom: 40,
+    maxHeight: '60%',
+  },
+  dateModalHandle: {
+    width: 36,
+    height: 5,
+    backgroundColor: colors.separator,
+    borderRadius: 3,
+    alignSelf: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  dateModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
+  dateModalTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  dateModalDone: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  dateModalList: {
+    paddingHorizontal: 20,
+  },
+  dateModalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
+  dateModalItemActive: {
+    backgroundColor: 'transparent',
+  },
+  dateModalItemText: {
+    fontSize: 16,
+    color: colors.text,
+  },
+  dateModalItemTextActive: {
+    color: colors.primary,
+    fontWeight: '500',
   },
   noteInput: {
     backgroundColor: colors.background,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Modal, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useGoalStore } from '../../src/stores/goalStore';
 import { useAccountStore } from '../../src/stores/accountStore';
 
@@ -75,12 +76,6 @@ export default function GoalsScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>储蓄目标</Text>
-          <Text style={styles.headerSubtitle}>设定目标，养成存钱习惯</Text>
-        </View>
-
         <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
           {goals.map((goal) => (
             <View key={goal.id} style={styles.goalCard}>
@@ -118,11 +113,17 @@ export default function GoalsScreen() {
                   styles.statusBadge,
                   goal.status === 'achieved' && styles.achievedBadge
                 ]}>
+                  <Ionicons
+                    name={goal.status === 'achieved' ? 'checkmark-circle' : 'time-outline'}
+                    size={14}
+                    color={goal.status === 'achieved' ? colors.success : colors.primary}
+                    style={{ marginRight: 4 }}
+                  />
                   <Text style={[
                     styles.statusText,
                     goal.status === 'achieved' && styles.achievedText
                   ]}>
-                    {goal.status === 'achieved' ? '🎉 已达成' : '进行中'}
+                    {goal.status === 'achieved' ? '已达成' : '进行中'}
                   </Text>
                 </View>
               </View>
@@ -132,7 +133,7 @@ export default function GoalsScreen() {
           {goals.length === 0 && (
             <View style={styles.emptyState}>
               <View style={styles.emptyIconContainer}>
-                <Text style={styles.emptyIcon}>🎯</Text>
+                <Ionicons name="flag-outline" size={36} color={colors.textTertiary} />
               </View>
               <Text style={styles.emptyText}>暂无储蓄目标</Text>
               <Text style={styles.emptySubtext}>设置目标，帮助你养成存钱习惯</Text>
@@ -223,22 +224,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: 0.37,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginTop: 4,
   },
   content: {
     flex: 1,
@@ -338,9 +323,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-  },
-  emptyIcon: {
-    fontSize: 32,
   },
   emptyText: {
     fontSize: 17,

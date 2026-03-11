@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAccountStore } from '../../src/stores/accountStore';
 import { useTransactionStore } from '../../src/stores/transactionStore';
 
@@ -97,7 +98,7 @@ export default function ReportsScreen() {
         {categories.length === 0 && (
           <View style={styles.emptyChart}>
             <View style={styles.emptyIconContainer}>
-              <Text style={styles.emptyIcon}>📊</Text>
+              <Ionicons name="pie-chart-outline" size={32} color={colors.textTertiary} />
             </View>
             <Text style={styles.emptyText}>暂无支出数据</Text>
             <Text style={styles.emptySubtext}>开始记账后即可查看分析</Text>
@@ -139,7 +140,7 @@ export default function ReportsScreen() {
         {sortedMonths.length === 0 && (
           <View style={styles.emptyChart}>
             <View style={styles.emptyIconContainer}>
-              <Text style={styles.emptyIcon}>📈</Text>
+              <Ionicons name="trending-up-outline" size={32} color={colors.textTertiary} />
             </View>
             <Text style={styles.emptyText}>暂无趋势数据</Text>
             <Text style={styles.emptySubtext}>开始记账后即可查看月度趋势</Text>
@@ -170,12 +171,14 @@ export default function ReportsScreen() {
           return (
             <View key={account.id} style={styles.accountItem}>
               <View style={[styles.accountIcon, { backgroundColor: COLORS[index % COLORS.length] + '20' }]}>
-                <Text style={styles.accountIconText}>
-                  {account.type === 'cash' ? '💵' :
-                   account.type === 'bank_card' ? '💳' :
-                   account.type === 'third_party' ? '📱' :
-                   account.type === 'investment' ? '📈' : '🏦'}
-                </Text>
+                <Ionicons
+                  name={account.type === 'cash' ? 'cash' :
+                        account.type === 'bank_card' ? 'card' :
+                        account.type === 'third_party' ? 'phone-portrait' :
+                        account.type === 'investment' ? 'trending-up' : 'business'}
+                  size={22}
+                  color={COLORS[index % COLORS.length]}
+                />
               </View>
               <View style={styles.accountInfo}>
                 <View style={styles.accountNameRow}>
@@ -199,7 +202,7 @@ export default function ReportsScreen() {
         {accounts.length === 0 && (
           <View style={styles.emptyChart}>
             <View style={styles.emptyIconContainer}>
-              <Text style={styles.emptyIcon}>💳</Text>
+              <Ionicons name="wallet-outline" size={32} color={colors.textTertiary} />
             </View>
             <Text style={styles.emptyText}>暂无账户数据</Text>
             <Text style={styles.emptySubtext}>添加账户后即可查看分布</Text>
@@ -212,12 +215,6 @@ export default function ReportsScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>报表分析</Text>
-          <Text style={styles.headerSubtitle}>了解你的财务状况</Text>
-        </View>
-
         {/* Tab Bar - iOS Segmented Control */}
         <View style={styles.tabBar}>
           <TouchableOpacity
@@ -261,22 +258,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: 0.37,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginTop: 4,
   },
   tabBar: {
     flexDirection: 'row',
@@ -471,9 +452,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 14,
   },
-  accountIconText: {
-    fontSize: 22,
-  },
   accountInfo: {
     flex: 1,
   },
@@ -511,9 +489,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-  },
-  emptyIcon: {
-    fontSize: 28,
   },
   emptyText: {
     fontSize: 17,

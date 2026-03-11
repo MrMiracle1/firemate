@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Modal, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAccountStore } from '../../src/stores/accountStore';
+import { validateForm, accountSchema } from '../../src/lib/validation';
 import { Account, AccountType } from '../../src/types';
 
 // Apple Design Color Palette
@@ -18,12 +20,12 @@ const colors = {
   separator: '#E5E5EA',
 };
 
-const accountTypeLabels: Record<AccountType, { name: string; icon: string }> = {
-  cash: { name: '现金', icon: '💵' },
-  bank_card: { name: '银行卡', icon: '💳' },
-  third_party: { name: '第三方支付', icon: '📱' },
-  investment: { name: '投资', icon: '📈' },
-  savings: { name: '储蓄', icon: '🏦' }
+const accountTypeLabels: Record<AccountType, { name: string; icon: keyof typeof Ionicons.glyphMap }> = {
+  cash: { name: '现金', icon: 'cash' },
+  bank_card: { name: '银行卡', icon: 'card' },
+  third_party: { name: '第三方支付', icon: 'phone-portrait' },
+  investment: { name: '投资', icon: 'trending-up' },
+  savings: { name: '储蓄', icon: 'business' }
 };
 
 export default function AccountsScreen() {
@@ -40,17 +42,20 @@ export default function AccountsScreen() {
   }, []);
 
   const handleSave = async () => {
-    if (!name.trim()) {
-      Alert.alert('提示', '请输入账户名称');
-      return;
-    }
-
-    const accountData = {
+    // 使用 zod 验证
+    const validation = validateForm(accountSchema, {
       name: name.trim(),
       type,
       balance: parseFloat(balance) || 0,
       color
-    };
+    });
+
+    if (!validation.success) {
+      Alert.alert('验证失败', validation.errors[0]);
+      return;
+    }
+
+    const accountData = validation.data;
 
     if (editingAccount) {
       await updateAccount(editingAccount.id, accountData);
@@ -128,9 +133,11 @@ export default function AccountsScreen() {
                   activeOpacity={0.7}
                 >
                   <View style={[styles.accountIcon, { backgroundColor: account.color || '#E3F2FD' }]}>
-                    <Text style={styles.accountIconText}>
-                      {accountTypeLabels[account.type]?.icon || '💰'}
-                    </Text>
+                    <Ionicons
+                      name={accountTypeLabels[account.type]?.icon || 'cash'}
+                      size={24}
+                      color={colors.primary}
+                    />
                   </View>
                   <View style={styles.accountInfo}>
                     <Text style={styles.accountName}>{account.name}</Text>
@@ -144,7 +151,7 @@ export default function AccountsScreen() {
           {accounts.length === 0 && (
             <View style={styles.emptyState}>
               <View style={styles.emptyIconContainer}>
-                <Text style={styles.emptyIcon}>💳</Text>
+                <Ionicons name="wallet-outline" size={36} color={colors.textTertiary} />
               </View>
               <Text style={styles.emptyText}>暂无账户</Text>
               <Text style={styles.emptySubtext}>点击下方按钮添加第一个账户</Text>
@@ -185,8 +192,14 @@ export default function AccountsScreen() {
                     onPress={() => setType(key as AccountType)}
                     activeOpacity={0.7}
                   >
+                    <Ionicons
+                      name={type === key ? val.icon : `${val.icon}-outline` as keyof typeof Ionicons.glyphMap}
+                      size={18}
+                      color={type === key ? '#FFFFFF' : colors.textSecondary}
+                      style={{ marginRight: 6 }}
+                    />
                     <Text style={[styles.typeChipText, type === key && styles.typeChipTextActive]}>
-                      {val.icon} {val.name}
+                      {val.name}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -284,9 +297,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 14,
   },
-  accountIconText: {
-    fontSize: 22,
-  },
   accountInfo: {
     flex: 1,
   },
@@ -315,9 +325,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-  },
-  emptyIcon: {
-    fontSize: 32,
   },
   emptyText: {
     fontSize: 17,
@@ -399,6 +406,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   typeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,

@@ -21,12 +21,12 @@
 
 **目的**：初始化前端和后端项目
 
-- [ ] T001 根据 plan.md 创建项目目录结构
-- [ ] T002 在 firemate-app/ 初始化 React Native (Expo) 项目
-- [ ] T003 在 server/ 初始化 Node.js + Express 项目
-- [ ] T004 [P] 为两个项目配置 TypeScript
-- [ ] T005 [P] 配置 ESLint 和 Prettier
-- [ ] T006 安装核心依赖（Zustand、Supabase 客户端、zod 等）
+- [x] T001 根据 plan.md 创建项目目录结构
+- [x] T002 在 firemate-app/ 初始化 React Native (Expo) 项目
+- [x] T003 在 server/ 初始化 Node.js + Express 项目
+- [x] T004 [P] 为两个项目配置 TypeScript
+- [x] T005 [P] 配置 ESLint 和 Prettier
+- [x] T006 安装核心依赖（Zustand、Supabase 客户端、zod 等）
 
 ---
 
@@ -36,15 +36,15 @@
 
 **⚠️ 关键**：此阶段未完成前无法开始用户故事开发
 
-- [ ] T007 在 server/src/lib/supabase.ts 配置 Supabase 客户端
-- [ ] T008 [P] 在 server/sql/schema.sql 创建数据库 schema
-- [ ] T009 [P] 在 Supabase 执行数据库 schema
-- [ ] T010 在 server/src/index.ts 创建 Express 服务器入口
-- [ ] T011 配置环境变量处理（.env）
-- [ ] T012 创建 API 路由结构（accounts、transactions、budgets、goals）
-- [ ] T013 配置 Express 中间件（CORS、JSON 解析、错误处理）
-- [ ] T014 在 firemate-app/src/types/index.ts 创建 TypeScript 类型定义
-- [ ] T015 建立 Zustand 基础 stores 结构
+- [x] T007 在 server/src/lib/supabase.ts 配置 Supabase 客户端
+- [x] T008 [P] 在 server/sql/schema.sql 创建数据库 schema
+- [x] T009 [P] 在 Supabase 执行数据库 schema
+- [x] T010 在 server/src/index.ts 创建 Express 服务器入口
+- [x] T011 配置环境变量处理（.env）
+- [x] T012 创建 API 路由结构（accounts、transactions、budgets、goals）
+- [x] T013 配置 Express 中间件（CORS、JSON 解析、错误处理）
+- [x] T014 在 firemate-app/src/types/index.ts 创建 TypeScript 类型定义
+- [x] T015 建立 Zustand 基础 stores 结构
 
 **检查点**：基础设施就绪 - 用户故事可以开始并行开发
 
@@ -58,13 +58,13 @@
 
 ### 实现任务
 
-- [ ] T016 [P] [US1] 在 firemate-app/src/types/index.ts 创建 Account 类型定义
-- [ ] T017 [P] [US1] 在 server/src/types/account.ts 创建账户模型/API 响应类型
-- [ ] T018 [US1] 在 server/src/services/accountService.ts 实现 accountService.getAll()
-- [ ] T019 [US1] 在 server/src/routes/accounts.ts 创建 GET /api/accounts 接口
-- [ ] T020 [US1] 在 firemate-app/src/stores/accountStore.ts 实现 accountStore
-- [ ] T021 [US1] 在 firemate-app/src/components/TotalAssetsCard.tsx 创建总资产卡片组件
-- [ ] T022 [US1] 在 firemate-app/src/app/(tabs)/index.tsx 构建首页总资产显示
+- [x] T016 [P] [US1] 在 firemate-app/src/types/index.ts 创建 Account 类型定义
+- [x] T017 [P] [US1] 在 server/src/types/account.ts 创建账户模型/API 响应类型
+- [x] T018 [US1] 在 server/src/services/accountService.ts 实现 accountService.getAll()
+- [x] T019 [US1] 在 server/src/routes/accounts.ts 创建 GET /api/accounts 接口
+- [x] T020 [US1] 在 firemate-app/src/stores/accountStore.ts 实现 accountStore
+- [x] T021 [US1] 在 firemate-app/src/components/TotalAssetsCard.tsx 创建总资产卡片组件
+- [x] T022 [US1] 在 firemate-app/src/app/(tabs)/index.tsx 构建首页总资产显示
 
 **检查点**：用户故事一应可独立完整运行和测试
 
@@ -78,17 +78,17 @@
 
 ### 实现任务
 
-- [ ] T023 [P] [US2] 在 server/src/services/accountService.ts 实现 accountService.create()
-- [ ] T024 [P] [US2] 在 server/src/services/accountService.ts 实现 accountService.update()
-- [ ] T025 [P] [US2] 在 server/src/services/accountService.ts 实现 accountService.delete()
-- [ ] T026 [US2] 在 server/src/routes/accounts.ts 创建 POST /api/accounts 接口
-- [ ] T027 [US2] 在 server/src/routes/accounts.ts 创建 PUT /api/accounts/:id 接口
-- [ ] T028 [US2] 在 server/src/routes/accounts.ts 创建 DELETE /api/accounts/:id 接口
-- [ ] T029 [US2] 在 firemate-app/src/stores/accountStore.ts 更新 accountStore 的 CRUD 方法
-- [ ] T030 [US2] 在 firemate-app/src/components/AccountCard.tsx 创建账户卡片组件
-- [ ] T031 [US2] 在 firemate-app/src/components/AddAccountModal.tsx 创建添加账户弹窗组件
-- [ ] T032 [US2] 在 firemate-app/src/app/(tabs)/accounts/index.tsx 构建账户列表页面
-- [ ] T033 [US2] 添加账户类型分组显示（现金、银行卡等）
+- [x] T023 [P] [US2] 在 server/src/services/accountService.ts 实现 accountService.create()
+- [x] T024 [P] [US2] 在 server/src/services/accountService.ts 实现 accountService.update()
+- [x] T025 [P] [US2] 在 server/src/services/accountService.ts 实现 accountService.delete()
+- [x] T026 [US2] 在 server/src/routes/accounts.ts 创建 POST /api/accounts 接口
+- [x] T027 [US2] 在 server/src/routes/accounts.ts 创建 PUT /api/accounts/:id 接口
+- [x] T028 [US2] 在 server/src/routes/accounts.ts 创建 DELETE /api/accounts/:id 接口
+- [x] T029 [US2] 在 firemate-app/src/stores/accountStore.ts 更新 accountStore 的 CRUD 方法
+- [x] T030 [US2] 在 firemate-app/src/components/AccountCard.tsx 创建账户卡片组件
+- [x] T031 [US2] 在 firemate-app/src/components/AddAccountModal.tsx 创建添加账户弹窗组件
+- [x] T032 [US2] 在 firemate-app/src/app/(tabs)/accounts/index.tsx 构建账户列表页面
+- [x] T033 [US2] 添加账户类型分组显示（现金、银行卡等）
 
 **检查点**：用户故事一和二应可独立运行
 
@@ -102,16 +102,16 @@
 
 ### 实现任务
 
-- [ ] T034 [P] [US3] 在 firemate-app/src/types/index.ts 创建 Transaction 类型定义
-- [ ] T035 [P] [US3] 在 firemate-app/src/data/categories.json 创建默认分类数据
-- [ ] T036 [P] [US3] 在 server/src/services/transactionService.ts 实现 transactionService.create()
-- [ ] T037 [US3] 在 server/src/routes/transactions.ts 创建 POST /api/transactions 接口
-- [ ] T038 [US3] 实现余额计算逻辑（收入 - 支出 + 转入 - 转出）
-- [ ] T039 [US3] 在 firemate-app/src/stores/accountStore.ts 交易后更新账户余额
-- [ ] T040 [US3] 在 firemate-app/src/components/TransactionItem.tsx 创建交易项组件
-- [ ] T041 [US3] 在 firemate-app/src/components/CategoryPicker.tsx 创建分类选择器组件
-- [ ] T042 [US3] 在 firemate-app/src/app/(tabs)/add.tsx 创建记账页面
-- [ ] T043 [US3] 在首页添加最近交易列表
+- [x] T034 [P] [US3] 在 firemate-app/src/types/index.ts 创建 Transaction 类型定义
+- [x] T035 [P] [US3] 在 firemate-app/src/data/categories.json 创建默认分类数据
+- [x] T036 [P] [US3] 在 server/src/services/transactionService.ts 实现 transactionService.create()
+- [x] T037 [US3] 在 server/src/routes/transactions.ts 创建 POST /api/transactions 接口
+- [x] T038 [US3] 实现余额计算逻辑（收入 - 支出 + 转入 - 转出）
+- [x] T039 [US3] 在 firemate-app/src/stores/accountStore.ts 交易后更新账户余额
+- [x] T040 [US3] 在 firemate-app/src/components/TransactionItem.tsx 创建交易项组件
+- [x] T041 [US3] 在 firemate-app/src/components/CategoryPicker.tsx 创建分类选择器组件
+- [x] T042 [US3] 在 firemate-app/src/app/(tabs)/add.tsx 创建记账页面
+- [x] T043 [US3] 在首页添加最近交易列表
 
 **检查点**：用户故事一、二、三应可独立运行
 
@@ -125,10 +125,10 @@
 
 ### 实现任务
 
-- [ ] T044 [P] [US4] 在 transactionService.create() 中添加转账类型处理
-- [ ] T045 [US4] 创建转账专用验证（to_account_id 不能等于 account_id）
-- [ ] T046 [US4] 在记账页面添加转账选项
-- [ ] T047 [US4] 转账时更新两个账户的余额
+- [x] T044 [P] [US4] 在 transactionService.create() 中添加转账类型处理
+- [x] T045 [US4] 创建转账专用验证（to_account_id 不能等于 account_id）
+- [x] T046 [US4] 在记账页面添加转账选项
+- [x] T047 [US4] 转账时更新两个账户的余额
 
 **检查点**：用户故事四与二、三集成但可独立测试
 
@@ -142,14 +142,14 @@
 
 ### 实现任务
 
-- [ ] T048 [P] [US5] 在 firemate-app/src/types/index.ts 创建 Budget 类型定义
-- [ ] T049 [P] [US5] 在 server/src/services/budgetService.ts 实现预算服务
-- [ ] T050 [US5] 在 server/src/routes/budgets.ts 创建预算 API 路由
-- [ ] T051 [US5] 实现每月修改次数限制（每月最多1次）
-- [ ] T052 [US5] 在 firemate-app/src/stores/budgetStore.ts 创建预算 store
-- [ ] T053 [US5] 在 firemate-app/src/components/BudgetProgress.tsx 创建预算进度组件
-- [ ] T054 [US5] 在首页添加预算显示
-- [ ] T055 [US5] 在 firemate-app/src/app/(tabs)/more/budget.tsx 创建预算设置页面
+- [x] T048 [P] [US5] 在 firemate-app/src/types/index.ts 创建 Budget 类型定义
+- [x] T049 [P] [US5] 在 server/src/services/budgetService.ts 实现预算服务
+- [x] T050 [US5] 在 server/src/routes/budgets.ts 创建预算 API 路由
+- [x] T051 [US5] 实现每月修改次数限制（每月最多1次）
+- [x] T052 [US5] 在 firemate-app/src/stores/budgetStore.ts 创建预算 store
+- [x] T053 [US5] 在 firemate-app/src/components/BudgetProgress.tsx 创建预算进度组件
+- [x] T054 [US5] 在首页添加预算显示
+- [x] T055 [US5] 在 firemate-app/src/app/(tabs)/more/budget.tsx 创建预算设置页面
 
 **检查点**：用户故事五与三集成但可独立测试
 
@@ -163,14 +163,14 @@
 
 ### 实现任务
 
-- [ ] T056 [P] [US6] 在 server/src/routes/reports.ts 创建报表 API 接口
-- [ ] T057 [P] [US6] 实现按分类聚合支出查询
-- [ ] T058 [P] [US6] 实现月度趋势聚合查询
-- [ ] T059 [US6] 安装 react-native-gifted-charts
-- [ ] T060 [US6] 创建支出分类饼图组件
-- [ ] T061 [US6] 创建月度趋势折线图组件
-- [ ] T062 [US6] 创建账户余额条形图组件
-- [ ] T063 [US6] 在 firemate-app/src/app/(tabs)/more/reports.tsx 构建报表页面（带 Tab 切换）
+- [x] T056 [P] [US6] 在 server/src/routes/reports.ts 创建报表 API 接口
+- [x] T057 [P] [US6] 实现按分类聚合支出查询
+- [x] T058 [P] [US6] 实现月度趋势聚合查询
+- [x] T059 [US6] 安装 react-native-gifted-charts
+- [x] T060 [US6] 创建支出分类饼图组件
+- [x] T061 [US6] 创建月度趋势折线图组件
+- [x] T062 [US6] 创建账户余额条形图组件
+- [x] T063 [US6] 在 firemate-app/src/app/(tabs)/more/reports.tsx 构建报表页面（带 Tab 切换）
 
 **检查点**：所有用户故事应可独立运行
 
@@ -184,14 +184,14 @@
 
 ### 实现任务
 
-- [ ] T064 [P] [US7] 在 firemate-app/src/types/index.ts 创建 Goal 类型定义
-- [ ] T065 [P] [US7] 在 server/src/services/goalService.ts 实现目标服务
-- [ ] T066 [US7] 在 server/src/routes/goals.ts 创建目标 API 路由
-- [ ] T067 [US7] 实现自动状态更新（达到目标金额时从 active 变为 achieved）
-- [ ] T068 [US7] 在 firemate-app/src/stores/goalStore.ts 创建目标 store
-- [ ] T069 [US7] 在 firemate-app/src/components/GoalCard.tsx 创建目标卡片组件
-- [ ] T070 [US7] 在 firemate-app/src/app/(tabs)/more/goals.tsx 构建目标页面
-- [ ] T071 [US7] 处理关联账户被删除时的目标重关联
+- [x] T064 [P] [US7] 在 firemate-app/src/types/index.ts 创建 Goal 类型定义
+- [x] T065 [P] [US7] 在 server/src/services/goalService.ts 实现目标服务
+- [x] T066 [US7] 在 server/src/routes/goals.ts 创建目标 API 路由
+- [x] T067 [US7] 实现自动状态更新（达到目标金额时从 active 变为 achieved）
+- [x] T068 [US7] 在 firemate-app/src/stores/goalStore.ts 创建目标 store
+- [x] T069 [US7] 在 firemate-app/src/components/GoalCard.tsx 创建目标卡片组件
+- [x] T070 [US7] 在 firemate-app/src/app/(tabs)/more/goals.tsx 构建目标页面
+- [x] T071 [US7] 处理关联账户被删除时的目标重关联
 
 ---
 
@@ -199,14 +199,14 @@
 
 **目的**：影响多个用户故事的改进
 
-- [ ] T072 [P] 在前端和后端使用 zod 添加表单验证
-- [ ] T073 [P] 实现 AsyncStorage 缓存支持离线
-- [ ] T074 添加加载状态和错误处理 UI
-- [ ] T075 实现匿名认证流程
-- [ ] T076 添加邮箱注册/登录流程
-- [ ] T077 优化性能（分页、懒加载）
-- [ ] T078 更新文档（README、quickstart.md）
-- [ ] T079 全用户故事集成测试
+- [x] T072 [P] 在前端和后端使用 zod 添加表单验证
+- [x] T073 [P] 实现 AsyncStorage 缓存支持离线
+- [x] T074 添加加载状态和错误处理 UI
+- [x] T075 实现匿名认证流程
+- [x] T076 添加邮箱注册/登录流程
+- [x] T077 优化性能（分页、懒加载）
+- [x] T078 更新文档（README、quickstart.md）
+- [x] T079 全用户故事集成测试
 
 ---
 
