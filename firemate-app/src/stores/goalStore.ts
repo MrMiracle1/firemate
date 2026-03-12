@@ -43,7 +43,25 @@ export const useGoalStore = create<GoalState>((set, get) => ({
   },
 
   createGoal: async (goal) => {
-    set({ loading: true, error: null });
+    // 1. 生成临时 ID 用于乐观更新
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const tempGoal: Goal = {
+      ...goal,
+      id: tempId,
+      user_id: TEST_USER_ID,
+      created_at: new Date().toISOString(),
+      status: 'active',
+      progress: 0
+    };
+
+    // 2. 乐观更新：立即添加到列表
+    set((state) => ({
+      goals: [...state.goals, tempGoal],
+      loading: true,
+      error: null
+    }));
+
+    // 3. 调用 API
     try {
       const response = await fetch(`${API_BASE_URL}/api/goals`, {
         method: 'POST',
@@ -53,15 +71,41 @@ export const useGoalStore = create<GoalState>((set, get) => ({
         },
         body: JSON.stringify(goal)
       });
+
       if (!response.ok) throw new Error('Failed to create goal');
-      await get().fetchGoals();
+
+      // 4. 成功后用真实数据替换临时数据
+      const createdGoal = await response.json();
+      set((state) => ({
+        goals: state.goals.map((g) =>
+          g.id === tempId ? { ...createdGoal, progress: createdGoal.account ? (Number(createdGoal.account.balance) / Number(createdGoal.target_amount)) * 100 : 0 } : g
+        ),
+        loading: false
+      }));
     } catch (error) {
-      set({ error: (error as Error).message, loading: false });
+      // 5. 失败回滚：删除临时数据
+      set((state) => ({
+        goals: state.goals.filter((g) => g.id !== tempId),
+        error: (error as Error).message,
+        loading: false
+      }));
+      throw error;
     }
   },
 
   updateGoal: async (id, updates) => {
-    set({ loading: true, error: null });
+    // 1. 保存旧数据用于回滚
+    const oldGoals = [...get().goals];
+
+    // 2. 乐观更新
+    set((state) => ({
+      goals: state.goals.map((g) =>
+        g.id === id ? { ...g, ...updates } : g
+      ),
+      error: null
+    }));
+
+    // 3. 调用 API
     try {
       const response = await fetch(`${API_BASE_URL}/api/goals/${id}`, {
         method: 'PUT',
@@ -74,7 +118,9 @@ export const useGoalStore = create<GoalState>((set, get) => ({
       if (!response.ok) throw new Error('Failed to update goal');
       await get().fetchGoals();
     } catch (error) {
-      set({ error: (error as Error).message, loading: false });
+      // 4. 失败回滚
+      set({ goals: oldGoals, error: (error as Error).message, loading: false });
+      throw error;
     }
   },
 

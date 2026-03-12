@@ -16,6 +16,10 @@ export interface Account {
 
 export const accountService = {
   async getAll(userId: string): Promise<Account[]> {
+    // 如果 userId 不是有效的 UUID，返回空数组
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    if (!isValidUUID) return [];
+
     const { data, error } = await supabase
       .from('accounts')
       .select('*')
@@ -28,6 +32,10 @@ export const accountService = {
   },
 
   async getById(userId: string, id: string): Promise<Account | null> {
+    // 如果 userId 不是有效的 UUID，返回 null
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    if (!isValidUUID) return null;
+
     const { data, error } = await supabase
       .from('accounts')
       .select('*')
@@ -41,6 +49,10 @@ export const accountService = {
   },
 
   async create(userId: string, account: Omit<Account, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Account> {
+    // 如果 userId 不是有效的 UUID，抛出错误
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    if (!isValidUUID) throw new Error('Invalid user ID');
+
     const { data, error } = await supabase
       .from('accounts')
       .insert({ ...account, user_id: userId })
@@ -52,6 +64,10 @@ export const accountService = {
   },
 
   async update(userId: string, id: string, updates: Partial<Account>): Promise<Account> {
+    // 如果 userId 不是有效的 UUID，抛出错误
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    if (!isValidUUID) throw new Error('Invalid user ID');
+
     const { data, error } = await supabase
       .from('accounts')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -65,6 +81,10 @@ export const accountService = {
   },
 
   async delete(userId: string, id: string): Promise<void> {
+    // 如果 userId 不是有效的 UUID，抛出错误
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    if (!isValidUUID) throw new Error('Invalid user ID');
+
     const { error } = await supabase
       .from('accounts')
       .update({ is_deleted: true, updated_at: new Date().toISOString() })

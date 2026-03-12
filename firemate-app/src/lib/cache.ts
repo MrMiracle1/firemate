@@ -76,4 +76,5 @@ export const CACHE_KEYS = {
   BUDGET: 'budget',
   GOALS: 'goals',
   TOTAL_SUMMARY: 'total_summary',
+  CATEGORIES: 'categories',
 };

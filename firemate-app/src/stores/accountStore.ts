@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Account, AssetSummary, AccountType } from '../types';
 import { API_BASE_URL, TEST_USER_ID } from '../lib/supabase';
 import { cacheService, CACHE_KEYS } from '../lib/cache';
+import { refreshAccountRelatedData } from '../lib/dataSync';
 
 interface AccountState {
   accounts: Account[];
@@ -83,7 +84,24 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   },
 
   createAccount: async (account) => {
-    set({ loading: true, error: null });
+    // 1. 生成临时 ID 用于乐观更新
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const tempAccount: Account = {
+      ...account,
+      id: tempId,
+      user_id: TEST_USER_ID,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    // 2. 乐观更新：立即添加到列表
+    set((state) => ({
+      accounts: [...state.accounts, tempAccount],
+      loading: true,
+      error: null
+    }));
+
+    // 3. 调用 API
     try {
       const response = await fetch(`${API_BASE_URL}/api/accounts`, {
         method: 'POST',
@@ -93,18 +111,50 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         },
         body: JSON.stringify(account)
       });
+
       if (!response.ok) throw new Error('Failed to create account');
-      // 清除缓存并重新获取
+
+      // 4. 成功后用真实数据替换临时数据
+      const createdAccount = await response.json();
+      set((state) => ({
+        accounts: state.accounts.map((a) =>
+          a.id === tempId ? createdAccount : a
+        ),
+        loading: false
+      }));
+
+      // 5. 刷新相关数据（目标进度等）
       await cacheService.remove(CACHE_KEYS.ACCOUNTS);
-      await get().fetchAccounts();
-      await get().fetchTotalSummary();
+      await refreshAccountRelatedData();
     } catch (error) {
-      set({ error: (error as Error).message, loading: false });
+      // 6. 失败回滚：删除临时数据
+      set((state) => ({
+        accounts: state.accounts.filter((a) => a.id !== tempId),
+        error: (error as Error).message,
+        loading: false
+      }));
+      throw error;
     }
   },
 
   updateAccount: async (id, updates) => {
-    set({ loading: true, error: null });
+    // 1. 乐观更新：先保存旧数据用于回滚
+    const oldAccounts = [...get().accounts];
+    const oldSummary = get().totalSummary;
+
+    // 2. 立即更新本地 state
+    set((state) => ({
+      accounts: state.accounts.map((a) =>
+        a.id === id ? { ...a, ...updates } : a
+      ),
+      totalSummary: oldSummary ? {
+        ...oldSummary,
+        total: oldSummary.total + ((updates.balance || 0) - (oldAccounts.find(a => a.id === id)?.balance || 0))
+      } : null,
+      error: null
+    }));
+
+    // 3. 调用 API
     try {
       const response = await fetch(`${API_BASE_URL}/api/accounts/${id}`, {
         method: 'PUT',
@@ -115,11 +165,13 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         body: JSON.stringify(updates)
       });
       if (!response.ok) throw new Error('Failed to update account');
-      await cacheService.remove(CACHE_KEYS.ACCOUNTS);
-      await get().fetchAccounts();
-      await get().fetchTotalSummary();
+
+      // 刷新相关数据（目标进度等）
+      await refreshAccountRelatedData();
     } catch (error) {
-      set({ error: (error as Error).message, loading: false });
+      // 4. 失败回滚
+      set({ accounts: oldAccounts, totalSummary: oldSummary });
+      throw error;
     }
   },
 
@@ -132,8 +184,8 @@ export const useAccountStore = create<AccountState>((set, get) => ({
       });
       if (!response.ok) throw new Error('Failed to delete account');
       await cacheService.remove(CACHE_KEYS.ACCOUNTS);
-      await get().fetchAccounts();
-      await get().fetchTotalSummary();
+      // 刷新相关数据（目标进度等）
+      await refreshAccountRelatedData();
     } catch (error) {
       set({ error: (error as Error).message, loading: false });
     }

@@ -6,6 +6,8 @@ import accountsRouter from './routes/accounts';
 import transactionsRouter from './routes/transactions';
 import budgetsRouter from './routes/budgets';
 import goalsRouter from './routes/goals';
+import categoriesRouter from './routes/categories';
+import { authMiddleware } from './middleware/auth';
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Public Routes
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Firemate API is running', version: '1.0.0' });
 });
@@ -25,11 +27,12 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
 
-// API Routes
-app.use('/api/accounts', accountsRouter);
-app.use('/api/transactions', transactionsRouter);
-app.use('/api/budgets', budgetsRouter);
-app.use('/api/goals', goalsRouter);
+// API Routes - 需要认证
+app.use('/api/accounts', authMiddleware, accountsRouter);
+app.use('/api/transactions', authMiddleware, transactionsRouter);
+app.use('/api/budgets', authMiddleware, budgetsRouter);
+app.use('/api/goals', authMiddleware, goalsRouter);
+app.use('/api/categories', authMiddleware, categoriesRouter);
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

@@ -143,6 +143,18 @@ export default function AccountsScreen() {
                     <Text style={styles.accountName}>{account.name}</Text>
                   </View>
                   <Text style={styles.accountBalance}>¥ {formatMoney(account.balance)}</Text>
+                  {/* Web 端删除按钮 */}
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleDelete(account);
+                    }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons name="trash-outline" size={18} color={colors.danger} />
+                  </TouchableOpacity>
                 </TouchableOpacity>
               ))}
             </View>
@@ -309,6 +321,10 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     color: colors.text,
+    marginRight: 8,
+  },
+  deleteButton: {
+    padding: 4,
   },
   emptyState: {
     alignItems: 'center',

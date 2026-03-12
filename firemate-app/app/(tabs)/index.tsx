@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAccountStore } from '../../src/stores/accountStore';
 import { useTransactionStore } from '../../src/stores/transactionStore';
 import { OfflineIndicator, ErrorMessage, Loading } from '../../src/components/common/Loading';
+import { Transaction } from '../../src/types';
 
 // Apple Design Color Palette
 const colors = {
@@ -142,7 +143,7 @@ export default function HomeScreen() {
             <Text style={styles.sectionTitle}>最近交易</Text>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => router.push('/(tabs)/add')}
+              onPress={() => router.push('/(tabs)/ledger')}
               activeOpacity={0.7}
             >
               <Text style={styles.addButtonText}>+ 记一笔</Text>
@@ -164,6 +165,7 @@ export default function HomeScreen() {
                   key={item.id}
                   style={styles.transactionItem}
                   activeOpacity={0.7}
+                  onPress={() => router.push(`/transaction/${item.id}`)}
                 >
                   <View style={styles.transactionLeft}>
                     <View style={[
@@ -217,7 +219,7 @@ export default function HomeScreen() {
 
             <TouchableOpacity
               style={styles.quickButton}
-              onPress={() => router.push('/(tabs)/add')}
+              onPress={() => router.push('/(tabs)/ledger')}
               activeOpacity={0.7}
             >
               <View style={[styles.quickIconContainer, { backgroundColor: '#E8F5E9' }]}>

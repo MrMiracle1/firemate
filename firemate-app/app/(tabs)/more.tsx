@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuthStore } from '../../src/lib/auth';
 
 // Apple Design Color Palette
 const colors = {
@@ -28,6 +29,28 @@ const menuItems = [
 
 export default function MoreScreen() {
   const router = useRouter();
+  const { signOut } = useAuthStore();
+
+  const handleLogout = () => {
+    Alert.alert(
+      '退出登录',
+      '确定要退出登录吗？',
+      [
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+        {
+          text: '退出登录',
+          style: 'destructive',
+          onPress: async () => {
+            await signOut();
+            router.replace('/auth');
+          },
+        },
+      ]
+    );
+  };
 
   const handlePress = (id: string) => {
     switch (id) {
@@ -39,6 +62,9 @@ export default function MoreScreen() {
         break;
       case 'goals':
         router.push('/more/goals');
+        break;
+      case 'categories':
+        router.push('/(tabs)/categories');
         break;
       default:
         break;
@@ -81,6 +107,15 @@ export default function MoreScreen() {
             <Text style={styles.appVersion}>v1.0.0</Text>
             <Text style={styles.appTagline}>让财务管理更简单</Text>
           </View>
+
+          {/* Logout Button */}
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={handleLogout}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.logoutText}>退出登录</Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -177,5 +212,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textTertiary,
     marginTop: 8,
+  },
+  logoutButton: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 8,
+    ...{
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
+    },
+  },
+  logoutText: {
+    fontSize: 17,
+    color: colors.danger,
+    fontWeight: '400',
   },
 });

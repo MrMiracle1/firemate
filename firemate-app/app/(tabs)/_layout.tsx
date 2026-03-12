@@ -33,10 +33,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="add"
+        name="ledger"
         options={{
           title: '记账',
-          tabBarIcon: ({ focused }) => <TabIcon name="add" focused={focused} iconName="create" />
+          tabBarIcon: ({ focused }) => <TabIcon name="ledger" focused={focused} iconName="list" />
         }}
       />
       <Tabs.Screen

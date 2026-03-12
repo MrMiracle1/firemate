@@ -1,5 +1,22 @@
 import { z } from 'zod';
 
+// 验证规则常量
+export const VALIDATION_RULES = {
+  NOTE_MAX_LENGTH: 128,
+  AMOUNT_MIN: 0.01,
+  AMOUNT_MAX: 999999999,
+  ACCOUNT_NAME_MAX_LENGTH: 50,
+  CATEGORY_NAME_MAX_LENGTH: 50,
+};
+
+// 验证消息
+export const VALIDATION_MESSAGES = {
+  REQUIRED: '此字段为必填项',
+  INVALID_AMOUNT: '请输入有效金额',
+  AMOUNT_TOO_LARGE: '金额超出允许范围',
+  NOTE_TOO_LONG: `备注不能超过${VALIDATION_RULES.NOTE_MAX_LENGTH}个字符`,
+};
+
 // 账户验证 Schema
 export const accountSchema = z.object({
   name: z.string().min(1, '账户名称不能为空').max(50, '名称不能超过50个字符'),
@@ -62,4 +79,47 @@ export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): { succes
 
   const errors = result.error.issues.map((err: z.ZodIssue) => err.message);
   return { success: false, errors };
+}
+
+// 备注验证函数
+export function validateNote(note: string): { valid: boolean; error?: string } {
+  if (note.length > VALIDATION_RULES.NOTE_MAX_LENGTH) {
+    return { valid: false, error: VALIDATION_MESSAGES.NOTE_TOO_LONG };
+  }
+  return { valid: true };
+}
+
+// 备注截断函数
+export function truncateNote(note: string): string {
+  return note.slice(0, VALIDATION_RULES.NOTE_MAX_LENGTH);
+}
+
+// 金额验证函数
+export function validateAmount(amount: number): { valid: boolean; error?: string } {
+  if (isNaN(amount) || amount <= 0) {
+    return { valid: false, error: VALIDATION_MESSAGES.INVALID_AMOUNT };
+  }
+  if (amount > VALIDATION_RULES.AMOUNT_MAX) {
+    return { valid: false, error: VALIDATION_MESSAGES.AMOUNT_TOO_LARGE };
+  }
+  return { valid: true };
+}
+
+// 格式化金额输入（只允许数字和小数点，最多2位小数）
+export function formatAmountInput(text: string): string {
+  // 移除不是数字或小数点的字符
+  let formatted = text.replace(/[^0-9.]/g, '');
+
+  // 确保只有一个小数点
+  const parts = formatted.split('.');
+  if (parts.length > 2) {
+    formatted = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  // 限制小数位数为2位
+  if (parts.length === 2 && parts[1].length > 2) {
+    formatted = parts[0] + '.' + parts[1].slice(0, 2);
+  }
+
+  return formatted;
 }
